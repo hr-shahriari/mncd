@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>8.0</LangVersion>
+	  <TargetFrameworks>net7.0;net48</TargetFrameworks>
+	  <LangVersion>8.0</LangVersion>
     <NullableReferenceTypes>true</NullableReferenceTypes>
     <TreatWarningAsErrors>true</TreatWarningAsErrors>
     <PackageId>MNCD</PackageId>

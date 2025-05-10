@@ -21,14 +21,14 @@ namespace MNCD.CommunityDetection.SingleLayer
         /// </summary>
         /// <param name="inputNetwork">Network in which to compute communities.</param>
         /// <returns>List of communities.</returns>
-        public List<Community> Apply(Network inputNetwork)
+        public List<Community> Apply(Network inputNetwork, int iter = 20000)
         {
             if (inputNetwork.LayerCount > 1)
             {
                 throw new ArgumentException("Louvain works only on single layered networks.");
             }
 
-            var hierarchy = GetHierarchy(inputNetwork);
+            var hierarchy = GetHierarchy(inputNetwork, iter);
             if (hierarchy.Count == 0)
             {
                 return inputNetwork.Actors
@@ -45,7 +45,7 @@ namespace MNCD.CommunityDetection.SingleLayer
         /// </summary>
         /// <param name="inputNetwork">Input network.</param>
         /// <returns>Hierarchy of communities and it's modularities.</returns>
-        public List<(double modularity, List<Community> communities)> GetHierarchy(Network inputNetwork)
+        public List<(double modularity, List<Community> communities)> GetHierarchy(Network inputNetwork, int iter)
         {
             if (inputNetwork.LayerCount > 1)
             {
@@ -58,8 +58,10 @@ namespace MNCD.CommunityDetection.SingleLayer
             Dictionary<Actor, List<Actor>> actorToActors = null;
 
             var hierarchy = new List<(double modularity, List<Community> communities)>();
-            while (true)
+            var n = 0;
+            while (n < iter)
             {
+                n++;
                 (communities, actorToCommunity) = PhaseOne(network);
 
                 var com = communities;

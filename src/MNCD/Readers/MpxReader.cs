@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -15,35 +14,7 @@ namespace MNCD.Readers
     /// </summary>
     public class MpxReader
     {
-        /// <summary>
-        /// Downloads a mpx from supplied url a converts it into a network.
-        /// </summary>
-        /// <param name="url">Datasets url.</param>
-        /// <returns>Created network.</returns>
-        public async Task<Network> FromUrl(string url)
-        {
-            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
-            {
-                if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-                {
-                    var client = new HttpClient();
 
-                    var response = await client.GetAsync(uri);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        return FromString(content);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Request was not successful, reason: " + response.ReasonPhrase);
-                    }
-                }
-            }
-
-            throw new ArgumentException("Url is not valid.");
-        }
 
         /// <summary>
         /// Reads a network from a text stream that contains string in MPX format.
@@ -61,16 +32,6 @@ namespace MNCD.Readers
             return FromString(content);
         }
 
-        /// <summary>
-        /// Reads network from a mpx file.
-        /// </summary>
-        /// <param name="path">Path to a mpx file.</param>
-        /// <returns>Network.</returns>
-        public async Task<Network> FromPath(string path)
-        {
-            var content = await File.ReadAllTextAsync(path);
-            return FromString(content);
-        }
 
         /// <summary>
         /// Reads a network from a string in mpx format.
@@ -142,7 +103,7 @@ namespace MNCD.Readers
 
             foreach (var layer in layers)
             {
-                var info = layer.Split(",");
+                var info = layer.Split(',');
                 network.Layers.Add(new Layer
                 {
                     Name = info[0],
@@ -151,14 +112,14 @@ namespace MNCD.Readers
 
             foreach (var actor in actors)
             {
-                var actorInfo = actor.Split(",");
+                var actorInfo = actor.Split(',');
                 var parsedActor = new Actor(idCounter++, actorInfo[0]);
                 network.Actors.Add(parsedActor);
             }
 
             foreach (var edgeInput in edges)
             {
-                var edgeInfo = edgeInput.Split(",");
+                var edgeInfo = edgeInput.Split(',');
                 var fromActor = network.Actors.First(a => a.Name == edgeInfo[0]);
                 var toActor = network.Actors.First(a => a.Name == edgeInfo[1]);
                 var edge = new Edge(fromActor, toActor);

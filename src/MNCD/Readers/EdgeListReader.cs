@@ -1,7 +1,6 @@
 using MNCD.Core;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace MNCD.Readers
@@ -16,30 +15,6 @@ namespace MNCD.Readers
         /// </summary>
         /// <param name="url">Datasets url.</param>
         /// <returns>Created network.</returns>
-        public async Task<Network> FromUrl(string url)
-        {
-            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
-            {
-                if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-                {
-                    var client = new HttpClient();
-
-                    var response = await client.GetAsync(uri);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                        return FromString(content);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Request was not successful, reason: " + response.ReasonPhrase);
-                    }
-                }
-            }
-
-            throw new ArgumentException("Url is not valid.");
-        }
 
         /// <summary>
         /// Creates network from a string in edgelist format.
@@ -78,7 +53,7 @@ namespace MNCD.Readers
                             break;
                         }
 
-                        var values = lines[i].Trim().Split(" ");
+                        var values = lines[i].Trim().Split(' ');
 
                         if (i == lines.Length - 1 && string.IsNullOrWhiteSpace(lines[i]))
                         {
@@ -111,7 +86,7 @@ namespace MNCD.Readers
                             break;
                         }
 
-                        var values = lines[i].Trim().Split(" ");
+                        var values = lines[i].Trim().Split(' ');
 
                         if (i == lines.Length - 1 && string.IsNullOrWhiteSpace(lines[i]))
                         {
@@ -138,7 +113,7 @@ namespace MNCD.Readers
                 }
                 else
                 {
-                    var values = lines[i].Trim().Split(" ");
+                    var values = lines[i].Trim().Split(' ');
 
                     if (values.Length != 5)
                     {
